@@ -1,8 +1,11 @@
-package com.example.filedemo.service;
+package com.origin.storage.service;
 
-import com.example.filedemo.exception.FileStorageException;
-import com.example.filedemo.exception.MyFileNotFoundException;
-import com.example.filedemo.property.FileStorageProperties;
+import com.origin.storage.exception.FileStorageException;
+import com.origin.storage.exception.MyFileNotFoundException;
+import com.origin.storage.model.FileMetadata;
+import com.origin.storage.property.FileStorageProperties;
+import com.origin.storage.repo.FileMetaDataRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -15,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 @Service
 public class FileStorageService {
@@ -45,6 +49,7 @@ public class FileStorageService {
 
             // Copy file to the target location (Replacing existing file with the same name)
             Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
             return fileName;
@@ -65,5 +70,13 @@ public class FileStorageService {
         } catch (MalformedURLException ex) {
             throw new MyFileNotFoundException("File not found " + fileName, ex);
         }
+    }
+    
+    @Autowired
+	private FileMetaDataRepository repository;
+    
+    public FileMetadata storeMetadata(FileMetadata metadata) {
+    	//log.info(" retreive ID for saved file :" + metadata);
+		return repository.save(metadata);
     }
 }
