@@ -18,7 +18,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FileStorageService {
@@ -37,9 +39,9 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file) {
+    public String storeFile(MultipartFile file, Date date) {
         // Normalize file name
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename()+date);
 
         try {
             // Check if the file's name contains invalid characters
@@ -79,4 +81,9 @@ public class FileStorageService {
     	//log.info(" retreive ID for saved file :" + metadata);
 		return repository.save(metadata);
     }
+    
+    public Optional<FileMetadata> getFileById(String id) {
+		return repository.findById(id);
+    }
+    
 }

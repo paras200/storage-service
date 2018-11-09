@@ -9,8 +9,8 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>file-demo</name>
-	<description>Spring Boot File Upload / Download Demo</description>
+	<name></name>
+	<description>Storage Service for Origin</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>

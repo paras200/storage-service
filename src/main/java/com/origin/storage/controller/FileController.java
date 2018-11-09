@@ -25,7 +25,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("deprecation")
 @RestController
+@CrossOrigin(origins = "*")
 public class FileController {
 
 	private static final Logger logger = LoggerFactory.getLogger(FileController.class);
@@ -35,9 +37,26 @@ public class FileController {
 
 	@PostMapping("/uploadFile")
 	public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
-		String fileName = fileStorageService.storeFile(file);
+		Date date = new Date();
 		FileMetadata metadata = new FileMetadata();
-		metadata.setName(file.getOriginalFilename()+""+new Date());
+		String fileName = fileStorageService.storeFile(file, date);
+		metadata.setDate(date);
+		metadata.setName(file.getOriginalFilename()+date);
+		metadata = fileStorageService.storeMetadata(metadata);
+		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFile/")
+				.path(fileName).toUriString();
+
+		return new UploadFileResponse(metadata.id, fileName, fileDownloadUri, file.getContentType(), file.getSize());
+	}
+	
+	@PostMapping("/uploadFile/{userId:.+}")
+	public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file, @PathVariable String userId, HttpServletRequest request) {
+		Date date = new Date();
+		FileMetadata metadata = new FileMetadata();
+		String fileName = fileStorageService.storeFile(file, date);
+		metadata.setDate(date);
+		metadata.setUserId(userId);
+		metadata.setName(file.getOriginalFilename()+date);
 		metadata = fileStorageService.storeMetadata(metadata);
 		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFile/")
 				.path(fileName).toUriString();
@@ -80,8 +99,13 @@ public class FileController {
 		return IOUtils.toString(resource.getInputStream(), "UTF-8");
 	}
 
-	@GetMapping("/getFileAsJson/{fileName:.+}")
-    public FileDataAsJson getFileAsJson(@PathVariable String fileName, HttpServletRequest request) throws IOException {
+	@GetMapping("/getFileAsJson/{id:.+}")
+    public FileDataAsJson getFileAsJson(@PathVariable String id, HttpServletRequest request) throws IOException {
+		return ExcelToJsonCoverter.creteJSONAndTextFileFromExcel("./uploads/"+fileStorageService.getFileById(id).get().getName());
+    }
+	
+	@GetMapping("/getFileAsJsonbyName/{fileName:.+}")
+    public FileDataAsJson getFileAsJsobyNamen(@PathVariable String fileName, HttpServletRequest request) throws IOException {
 		return ExcelToJsonCoverter.creteJSONAndTextFileFromExcel("./uploads/"+fileName);
     }
 
