@@ -2,6 +2,7 @@ package com.origin.storage.service;
 
 import java.io.FileInputStream;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,9 +98,9 @@ public class ExcelToJsonCoverter {
 
                     if(cellType == CellType.NUMERIC.getCode())
                     {
-                        double numberValue = cell.getNumericCellValue();
+                        long numberValue = (long) cell.getNumericCellValue();
 
-                        String stringCellValue = BigDecimal.valueOf(numberValue).toPlainString();
+                        String stringCellValue = BigInteger.valueOf(numberValue).toString();
 
                         rowDataList.add(stringCellValue);
 
