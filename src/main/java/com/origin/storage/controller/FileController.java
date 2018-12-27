@@ -1,10 +1,12 @@
 package com.origin.storage.controller;
 
-import com.origin.storage.model.FileDataAsJson;
-import com.origin.storage.model.FileMetadata;
-import com.origin.storage.model.UploadFileResponse;
-import com.origin.storage.service.ExcelToJsonCoverter;
-import com.origin.storage.service.FileStorageService;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -14,16 +16,21 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.itextpdf.text.DocumentException;
+import com.origin.storage.model.FileDataAsJson;
+import com.origin.storage.model.FileMetadata;
+import com.origin.storage.model.UploadFileResponse;
+import com.origin.storage.service.ExcelToJsonCoverter;
+import com.origin.storage.service.FileStorageService;
 
 @SuppressWarnings("deprecation")
 @RestController
@@ -108,5 +115,9 @@ public class FileController {
     public FileDataAsJson getFileAsJsobyNamen(@PathVariable String fileName, HttpServletRequest request) throws IOException {
 		return ExcelToJsonCoverter.creteJSONAndTextFileFromExcel("./uploads/"+fileName);
     }
-
+	@PostMapping("/generatePDF")
+    public UploadFileResponse generatePDF(@RequestParam("file") MultipartFile file, HttpServletRequest request) throws IOException, DocumentException {
+		return fileStorageService.convertToPDF(file);
+    }
+	
 }
