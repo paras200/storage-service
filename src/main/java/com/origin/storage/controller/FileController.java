@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +47,7 @@ public class FileController {
 	public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file) {
 		Date date = new Date();
 		FileMetadata metadata = new FileMetadata();
-		String fileName = fileStorageService.storeFile(file, date);
+		String fileName = fileStorageService.storeFile(file, date.getTime());
 		metadata.setDate(date);
 		metadata.setName(file.getOriginalFilename()+date);
 		metadata = fileStorageService.storeMetadata(metadata);
@@ -60,10 +61,10 @@ public class FileController {
 	public UploadFileResponse uploadFile(@RequestParam("file") MultipartFile file, @PathVariable String userId, HttpServletRequest request) {
 		Date date = new Date();
 		FileMetadata metadata = new FileMetadata();
-		String fileName = fileStorageService.storeFile(file, date);
+		String fileName = fileStorageService.storeFile(file, date.getTime());
 		metadata.setDate(date);
 		metadata.setUserId(userId);
-		metadata.setName(file.getOriginalFilename()+date);
+		metadata.setName(file.getOriginalFilename()+date.getTime()+FilenameUtils.getExtension(file.getOriginalFilename()));
 		metadata = fileStorageService.storeMetadata(metadata);
 		String fileDownloadUri = ServletUriComponentsBuilder.fromCurrentContextPath().path("/downloadFile/")
 				.path(fileName).toUriString();

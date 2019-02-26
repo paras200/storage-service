@@ -12,6 +12,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.Date;
 import java.util.Optional;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +51,9 @@ public class FileStorageService {
         }
     }
 
-    public String storeFile(MultipartFile file, Date date) {
+    public String storeFile(MultipartFile file, long date) {
         // Normalize file name
-        String fileName = StringUtils.cleanPath(file.getOriginalFilename()+date);
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename()+date+"."+FilenameUtils.getExtension(file.getOriginalFilename()));
 
         try {
             // Check if the file's name contains invalid characters
